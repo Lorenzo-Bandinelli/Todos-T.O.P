@@ -20,9 +20,39 @@ function renderTodoList(event){
         let todoList = getTodoList(document.currentTodoListTitle, allTodos) 
         let todoListDom = document.querySelector('.todoList')
         for (let todoItemofList of todoList){
+            let {title, desc, dueDate, priority} = todoItemofList
             let li = document.createElement('li')
             let textDiv = document.createElement('div')
             textDiv.classList.add('todoItemInfo')
+
+            let spanTitleKey = document.createElement('span')
+            spanTitleKey.appendChild(document.createTextNode('Title: '))
+            spanTitleKey.classList.add('todoInfoKey')
+            let spanTitleValue = document.createElement('span')
+            spanTitleValue.appendChild(document.createTextNode(title))
+            spanTitleValue.classList.add('todoInfoValue')
+
+            let spanDescKey = document.createElement('span')
+            spanDescKey.appendChild(document.createTextNode('Description: '))
+            spanDescKey.classList.add('todoInfoKey')
+            let spanDescValue = document.createElement('span')
+            spanDescValue.appendChild(document.createTextNode(desc))
+            spanDescValue.classList.add('todoInfoValue')
+
+            let spanDateKey = document.createElement('span')
+            spanDateKey.appendChild(document.createTextNode('Due Date: '))
+            spanDateKey.classList.add('todoInfoKey')
+            let spanDateValue = document.createElement('span')
+            spanDateValue.appendChild(document.createTextNode(dueDate))
+            spanDateValue.classList.add('todoInfoValue')
+
+            let spanPriorityKey = document.createElement('span')
+            spanPriorityKey.appendChild(document.createTextNode('Priority: '))
+            spanPriorityKey.classList.add('todoInfoKey')
+            let spanPriorityValue = document.createElement('span')
+            spanPriorityValue.appendChild(document.createTextNode(priority))
+            spanPriorityValue.classList.add('todoInfoValue')
+
             let textValue = document.createTextNode(`${JSON.stringify(todoItemofList)}`) ;
             li.classList.add('todoItem')
             textDiv.appendChild(textValue)
