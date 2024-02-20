@@ -1,0 +1,68 @@
+html, body{
+    height: 99%;
+}
+
+.todoApp{
+    display: flex;
+    flex-direction: row;
+    height: 100%;
+    align-items: center;
+    flex-wrap: nowrap;
+    width: 100%;
+}
+
+.sideDiv{
+    background-color: #3f3f00;
+    width: 20vw;
+    height: 97vh;
+    border-radius: 0.5%;
+    position: relative;
+}
+
+.sideDiv > *{
+    margin: 15px 12px;
+}
+
+.buttonDiv{
+    position: absolute;
+    right: 5px;
+}
+
+.buttonDiv > button{
+    font-size: 12px;
+}
+
+.sideDiv > div > .todoGroup, .sideDiv > div > .buttonDiv{
+        display: inline;
+}
+
+input.nameInputForm, input.nameInputButton{
+    background-color: #3f3f00;
+    border-color: black;
+}
+
+.mainDiv{
+    align-self: flex-start;
+    width: 100%;
+}
+
+.todoItem{
+    padding: 25px 0px;
+}
+
+.todoItem > *{
+    display: inline;
+    
+}
+
+.todoItem > .todoItemInfo{
+    font-size: 1.05rem;
+}
+
+.todoItem > .itemButtonDiv{
+    margin-left: 50px;
+}
+
+.todoItem > .itemButtonDiv > button{
+    font-size: 12px;
+}
