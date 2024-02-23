@@ -1,28 +1,35 @@
 var allTodos = [
     {
-      itemList: [{"title":1,"desc":2,"dueDate":3,"priority":4}, {"title":4,"desc":"oloco","dueDate":2,"priority":1}],
-      itemListName: '_____itemList______ ' ,
-      todoListId: 'TODOID'
-    },
-    {
-      itemList: [{"title":"hello world","desc":"improve coding skills","dueDate":"anytime","priority":"--dont_care"}],
-      itemListName: '______itemList1______ ',
-      todoListId: 'TODOID'
+      itemList: [],
+      itemListName: 'Welcome ' ,
     }
 ]
 
 const todoItem = (title, desc, dueDate, priority) => {return {title, desc, dueDate, priority}}
 
+
 const getTodoList = (todoListName, allTodos) => {
-    let tempObj = allTodos.filter((element)=>element.itemListName === todoListName)
+    let tempObj = allTodos.filter((element)=>element.itemListName == todoListName)
     return tempObj[0].itemList
     }
+
+function getAllListTitles(allTodos){
+    let todoTitles = []
+    allTodos.forEach((itemList)=>todoTitles.push(itemList.itemListName))
+    return todoTitles
+}
+
+function getAllItemTitles(todoListName, allTodos){
+    let todoList = getTodoList(todoListName, allTodos)
+    let itemTitles = []
+    todoList.forEach((item)=>itemTitles.push(item.title))
+    return itemTitles
+}
 
 function createTodoList (todoListName){
     allTodos.push({
         itemList: [],
         itemListName: todoListName,
-        todoListId: 'TODOID' 
     })
 }
 
@@ -37,7 +44,8 @@ function addTodoToList(todoItem, todoListName){
 function updateTodoList(todoListName, todoTitle ,changePropertyName, newValue){
     allTodos.forEach((todoList) => {
         if (todoList.itemListName === todoListName){
-            let itemIndex = todoList.itemList.findIndex(todoItem => todoItem.title === todoTitle)
+            let itemIndex = todoList.itemList.findIndex(todoItem => todoItem.title == todoTitle)
+            console.log(todoList.itemList);
             todoList.itemList[itemIndex][changePropertyName] = newValue
         }
     });
@@ -78,4 +86,4 @@ function updateTodoTitle(todoOldTitle, todoNewTitle){
 // updateTodoTitle('______itemList1______ ', '___NewTitle__')
 // console.log(JSON.stringify(allTodos));
 
-export {todoItem, getTodoList, createTodoList, addTodoToList, updateTodoList, delTodoItem, delTodoList, updateTodoTitle,allTodos}
+export {todoItem, getTodoList, createTodoList, addTodoToList, updateTodoList, delTodoItem, delTodoList, updateTodoTitle, getAllItemTitles, getAllListTitles,allTodos}

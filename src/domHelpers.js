@@ -7,11 +7,15 @@
 //     }
 // ]
 
-import {todoItem, getTodoList, createTodoList, addTodoToList, updateTodoList, delTodoItem, delTodoList, allTodos, updateTodoTitle} from './todoList.js'
+import {todoItem, getTodoList, createTodoList, addTodoToList, updateTodoList, delTodoItem, delTodoList, allTodos, updateTodoTitle, getAllItemTitles, getAllListTitles} from './todoList.js'
 import {pubsub} from './pubsub.js'
+import {parse as dateParse, format as dateFormat} from 'date-fns'
+import './style.css'
+import deleteIcon from './delete-1-svgrepo-com.svg'
+import editIcon from './edit-svgrepo-com.svg'
+//render obj dinamically, get pubsub better working, datetime 
 
 function renderTodoList(event){
-    console.log(event.target)
     if (event === 'changingList' || event.target.classList.contains('todoGroup')){
         clearTodoList(event)
         if (event !== 'changingList'){
@@ -19,43 +23,62 @@ function renderTodoList(event){
         }
         let todoList = getTodoList(document.currentTodoListTitle, allTodos) 
         let todoListDom = document.querySelector('.todoList')
+        if(todoList.length === 0){
+            renderAddTodoItemButton(event)
+            try {
+                mainDiv.removeEventListener('mouseleave', removeAddTodoItemButton)
+            } catch (error) {
+                console.log(error);
+            }
+            return
+        }
         for (let todoItemofList of todoList){
             let {title, desc, dueDate, priority} = todoItemofList
             let li = document.createElement('li')
             let textDiv = document.createElement('div')
             textDiv.classList.add('todoItemInfo')
+            //add a way to loop through the object programatically
+
+            let spanOpenBrackets = document.createElement('span')
+            spanOpenBrackets.appendChild(document.createTextNode('{ '))
+            spanOpenBrackets.classList.add('todoInfoOpenCloseBrackets')
 
             let spanTitleKey = document.createElement('span')
-            spanTitleKey.appendChild(document.createTextNode('Title: '))
+            spanTitleKey.appendChild(document.createTextNode('title: '))
             spanTitleKey.classList.add('todoInfoKey')
             let spanTitleValue = document.createElement('span')
-            spanTitleValue.appendChild(document.createTextNode(title))
+            spanTitleValue.appendChild(document.createTextNode(title + ', '))
             spanTitleValue.classList.add('todoInfoValue')
 
             let spanDescKey = document.createElement('span')
-            spanDescKey.appendChild(document.createTextNode('Description: '))
+            spanDescKey.appendChild(document.createTextNode('description: '))
             spanDescKey.classList.add('todoInfoKey')
             let spanDescValue = document.createElement('span')
-            spanDescValue.appendChild(document.createTextNode(desc))
+            spanDescValue.appendChild(document.createTextNode(desc + ', '))
             spanDescValue.classList.add('todoInfoValue')
 
             let spanDateKey = document.createElement('span')
-            spanDateKey.appendChild(document.createTextNode('Due Date: '))
+            spanDateKey.appendChild(document.createTextNode('due date: '))
             spanDateKey.classList.add('todoInfoKey')
             let spanDateValue = document.createElement('span')
-            spanDateValue.appendChild(document.createTextNode(dueDate))
+            spanDateValue.appendChild(document.createTextNode(dueDate + ', '))
             spanDateValue.classList.add('todoInfoValue')
 
             let spanPriorityKey = document.createElement('span')
-            spanPriorityKey.appendChild(document.createTextNode('Priority: '))
+            spanPriorityKey.appendChild(document.createTextNode('priority: '))
             spanPriorityKey.classList.add('todoInfoKey')
             let spanPriorityValue = document.createElement('span')
-            spanPriorityValue.appendChild(document.createTextNode(priority))
+            spanPriorityValue.appendChild(document.createTextNode(priority + ' '))
             spanPriorityValue.classList.add('todoInfoValue')
 
-            let textValue = document.createTextNode(`${JSON.stringify(todoItemofList)}`) ;
+            let spanCloseBrackets = document.createElement('span')
+            spanCloseBrackets.appendChild(document.createTextNode(' }'))
+            spanCloseBrackets.classList.add('todoInfoOpenCloseBrackets')
+
             li.classList.add('todoItem')
-            textDiv.appendChild(textValue)
+            Array(spanOpenBrackets, spanTitleKey, spanTitleValue, spanDescKey, spanDescValue, spanDateKey, spanDateValue, spanPriorityKey, spanPriorityValue, spanCloseBrackets)
+                .forEach((element) => textDiv.appendChild(element))
+            
             li.appendChild(textDiv)
             todoListDom.appendChild(li)
         }
@@ -67,6 +90,36 @@ function renderTodoList(event){
         li.addEventListener('mouseenter', renderRemoveEditTodoItem)
         li.addEventListener('mouseleave', removeRemoveEditTodoItem)
     })
+}
+
+function updateLocalStorage(){
+    console.log('im updt local storage')
+    localStorage.setItem('allTodos', JSON.stringify(allTodos))
+    allTodos = JSON.parse(localStorage.getItem('allTodos'))
+}
+
+function isValidItemTitle(itemTitle){
+    if (getAllItemTitles(document.currentTodoListTitle, allTodos).includes(itemTitle)){
+        return false
+    } else {
+        return true
+    }
+}
+
+function isValidListTitle(listTitle){
+    if (getAllListTitles(allTodos).includes(listTitle)){
+        return false
+    } else {
+        return true
+    }
+}
+
+function isValidItemInput(ArrayOfValues){
+    if(ArrayOfValues.some((element) => {return element.includes(',') || element.includes('}') || element.includes('{')})){
+        return false
+    } else {
+        return true
+    }
 }
 
 function renderTodoTitles(allTodos){
@@ -107,10 +160,13 @@ function clearTodoList(event){
 function renderAddTodoTitleButton(event){
     if (!document.querySelector('sideDiv > .addButton')){
         let sideDiv = document.querySelector('.sideDiv')
-        let addButton = document.createElement('span')
+        let addButton = document.createElement('button')
+        let buttonDiv = document.createElement('div')
+        buttonDiv.classList.add('addTodoTitleButton')
         addButton.classList.add('addButton')
-        addButton.appendChild(document.createTextNode('__CLICK ME__'))
-        sideDiv.appendChild(addButton)
+        addButton.appendChild(document.createTextNode('ADD NEW'))
+        buttonDiv.appendChild(addButton)
+        sideDiv.appendChild(buttonDiv)
         if (addButton){
             addButton.addEventListener('click', addNewTodoList)
         }
@@ -118,8 +174,8 @@ function renderAddTodoTitleButton(event){
 }
 
 function removeAddTodoTitleButton(event){
-    if (document.querySelector('.sideDiv > .addButton')){
-        let addButton = document.querySelector('.sideDiv > .addButton')
+    if (document.querySelector('.sideDiv > .addTodoTitleButton')){
+        let addButton = document.querySelector('.sideDiv > .addTodoTitleButton')
         addButton.remove()
     }
 }
@@ -142,6 +198,7 @@ function addNewTodoList(event){
 
 pubsub.subscribe('submitNewTodoList', clearTodoTitles)
 pubsub.subscribe('submitNewTodoList', renderTodoTitles)
+pubsub.subscribe('submitNewTodoList', updateLocalStorage)
 pubsub.subscribe('submitNewTodoList', () => {
     sideDiv.addEventListener('mouseenter', renderAddTodoTitleButton)
     sideDiv.addEventListener('mouseleave', removeAddTodoTitleButton)
@@ -149,6 +206,10 @@ pubsub.subscribe('submitNewTodoList', () => {
 function submitNewTodoList(event){
     event.preventDefault()
     let formData = Object.fromEntries(new FormData(event.target).entries())
+    if(!isValidListTitle(formData.todoListName)){
+        alert('Title Name Must be UNIQUE !!')
+        return
+    }
     createTodoList(formData.todoListName)
     pubsub.publish('submitNewTodoList', allTodos)
 }
@@ -157,7 +218,7 @@ function renderAddTodoItemButton(event){
     if (!document.querySelector('.mainDiv > .addButton') && !document.querySelector('.mainDiv > form') && document.currentTodoListTitle){
         let addButton = document.createElement('button')
         addButton.classList.add('addButton')
-        addButton.appendChild(document.createTextNode('CLICK ME'))
+        addButton.appendChild(document.createTextNode('ADD NEW'))
         mainDiv.appendChild(addButton)
         if (addButton){
             addButton.addEventListener('click', addNewTodoItem)
@@ -186,22 +247,26 @@ function addNewTodoItem(event){
     formDesc.name = 'todoDesc'
     formDesc.placeholder = 'Description'
     let formDuedate = document.createElement('input')
-    formDuedate.type = 'text'
+    formDuedate.type = 'date'
     formDuedate.name = 'todoDuedate'
     formDuedate.placeholder = 'Due Date'
+    let dateFormLabel = document.createElement('label')
+    dateFormLabel.for = 'todoDuedate'
+    dateFormLabel.appendChild(document.createTextNode('Due Date'))
     let formPriority = document.createElement('input')
     formPriority.type = 'text'
     formPriority.name = 'todoPriority'
     formPriority.placeholder = 'Priority'
     let sbtButton = document.createElement('input')
     sbtButton.type = 'submit'
-    Array(formTitle, formDesc, formDuedate, formPriority ,sbtButton).forEach(element => form.appendChild(element))
+    Array(formTitle, formDesc, dateFormLabel ,formDuedate, formPriority ,sbtButton).forEach(element => form.appendChild(element))
     mainDiv.appendChild(form)
     form.addEventListener('submit', submitNewTodoItem)
 }
 
 pubsub.subscribe('submitNewTodoItem', clearTodoList)
 pubsub.subscribe('submitNewTodoItem', renderTodoList)
+pubsub.subscribe('submitNewTodoItem', updateLocalStorage)
 pubsub.subscribe('submitNewTodoItem', ()=> {
     mainDiv.addEventListener('mouseover', renderAddTodoItemButton)
     mainDiv.addEventListener('mouseleave', removeAddTodoItemButton)
@@ -209,6 +274,17 @@ pubsub.subscribe('submitNewTodoItem', ()=> {
 function submitNewTodoItem(event){
     event.preventDefault()
     let {todoTitle, todoDesc, todoDuedate, todoPriority} = Object.fromEntries(new FormData(event.target).entries())
+    if(!isValidItemTitle(todoTitle)){
+        alert('Item Titles Must Be Unique!!')
+        return
+    }
+
+    if(!isValidItemInput(Array(todoTitle, todoDesc, todoDuedate, todoPriority))){
+        alert('items cannot have " { } ," characters')
+        return
+    }
+    todoDuedate = dateParse(todoDuedate, 'yyyy-mm-dd', new Date())
+    todoDuedate = dateFormat(todoDuedate, 'dd/mm/yyyy')
     addTodoToList(todoItem(todoTitle, todoDesc, todoDuedate, todoPriority), document.currentTodoListTitle)
     pubsub.publish('submitNewTodoItem', 'changingList')
 }
@@ -216,12 +292,14 @@ function submitNewTodoItem(event){
 function renderRemoveEditTitleButton(event){
     let removeBttn = document.createElement('button')
     removeBttn.classList.add('removeTitleButton')
-    removeBttn.appendChild(document.createTextNode('X'))
-    removeBttn.style.color = 'red'
+    let removeBttnIcon = document.createElement('img')
+    removeBttnIcon.src = deleteIcon
+    removeBttn.appendChild(removeBttnIcon)
     let editButton = document.createElement('button')
     editButton.classList.add('editTitleButton')
-    editButton.appendChild(document.createTextNode('EDIT'))
-    editButton.style.color = 'blue'
+    let editBttnIcon = document.createElement('img')
+    editBttnIcon.src = editIcon
+    editButton.appendChild(editBttnIcon)
     let buttonDiv = document.createElement('div')
     buttonDiv.classList.add('buttonDiv')
     buttonDiv.appendChild(editButton)
@@ -240,15 +318,14 @@ function removeRemoveEditTitleButton(event){
 
 pubsub.subscribe('removeTodoTitle', clearTodoTitles)
 pubsub.subscribe('removeTodoTitle', renderTodoTitles)
+pubsub.subscribe('removeTodoTitle', updateLocalStorage)
 function removeTodoTitle(event){
     delTodoList(event.target.textContent)
-    console.log(allTodos);
     pubsub.publish('removeTodoTitle', allTodos)
 }
 
 function editTodoTitle(event){
-    let inlineDiv = event.target.parentNode.parentNode
-    console.log(inlineDiv);
+    let inlineDiv = event.target.parentNode.parentNode.parentNode
     document.todoOldTitle = inlineDiv.firstChild.textContent
     let allTitles = document.querySelectorAll('.sideDiv > div')
     allTitles.forEach(thisTitle => {
@@ -277,6 +354,7 @@ function editTodoTitle(event){
 
 pubsub.subscribe('editTodoTitle', clearTodoTitles)
 pubsub.subscribe('editTodoTitle', renderTodoTitles)
+pubsub.subscribe('editTodoTitle', updateLocalStorage)
 pubsub.subscribe('editTodoTitle', ()=> {
     let allTitles = document.querySelectorAll('.sideDiv > div')
     allTitles.forEach(thisTitle => {
@@ -289,6 +367,13 @@ pubsub.subscribe('editTodoTitle', ()=> {
 function submitEditTitleChanges(event){
     event.preventDefault()
     let {newTitle} = Object.fromEntries(new FormData(event.target).entries())
+    if(newTitle != document.todoOldTitle && !isValidListTitle(newTitle)){
+        alert('Title Name Must be UNIQUE !!')
+        return
+    }
+    if(document.currentTodoListTitle === document.todoOldTitle){
+        document.currentTodoListTitle = newTitle
+    }
     updateTodoTitle(document.todoOldTitle, newTitle)
     pubsub.publish('editTodoTitle', allTodos)
 }
@@ -296,12 +381,14 @@ function submitEditTitleChanges(event){
 function renderRemoveEditTodoItem(event){
     let removeBttn = document.createElement('button')
     removeBttn.classList.add('removeItemButton')
-    removeBttn.appendChild(document.createTextNode('X'))
-    removeBttn.style.color = 'red'
     let editButton = document.createElement('button')
     editButton.classList.add('editItemButton')
-    editButton.appendChild(document.createTextNode('EDIT'))
-    editButton.style.color = 'blue'
+    let editBttnIcon = document.createElement('img')
+    editBttnIcon.src = editIcon
+    editButton.appendChild(editBttnIcon)
+    let removeBttnIcon = document.createElement('img')
+    removeBttnIcon.src = deleteIcon
+    removeBttn.appendChild(removeBttnIcon)
     let buttonDiv = document.createElement('div')
     buttonDiv.classList.add('itemButtonDiv')
     buttonDiv.appendChild(editButton)
@@ -318,9 +405,27 @@ function removeRemoveEditTodoItem(event){
     }
 }
 
+function getTodoItemObject(parentElement){
+    let todoItemObject = Array.from(parentElement.children).reduce((preValue, currValue) => {
+        if (currValue.classList.contains('itemButtonDiv')){
+            return preValue.textContent + ''
+        } else {
+            return preValue.textContent + currValue.textContent
+        }
+        })
+    const regex = /(?<=[:|{|,]).*?(?=[,|}:])/g
+    todoItemObject = todoItemObject.replace('due date', 'dueDate')
+    todoItemObject = todoItemObject.replace(regex,  '\"$&\"')
+    todoItemObject = todoItemObject.replace(/(\\)?"\s*|\s+"/g, ($0, $1) => $1 ? $0 : '"')
+    return todoItemObject;
+}
+
 function editItem(event){
-    let todoInfoDom = event.target.parentNode.parentNode
-    let todoInfo = JSON.parse(todoInfoDom.firstChild.textContent)
+    let todoInfoDom = event.target.parentNode.parentNode;
+    if (!todoInfoDom.classList.contains('todoItem')){
+        todoInfoDom = todoInfoDom.parentNode
+    }
+    let todoInfo = JSON.parse(getTodoItemObject(todoInfoDom))
     document.currentTodoItemTitle = todoInfo.title
 
     let allItems = document.querySelectorAll('.mainDiv > ul > li')
@@ -342,13 +447,25 @@ function editItem(event){
     let descInput = document.createElement('input')
     descInput.type = 'text'
     descInput.name = 'newDesc'
-    descInput.value = todoInfo.desc
+    descInput.value = todoInfo.description
     descInput.classList.add('descInputForm')
     let dueDateInput = document.createElement('input')
-    dueDateInput.type = 'text'
+    dueDateInput.type = 'date'
     dueDateInput.name = 'newDate'
-    dueDateInput.value = todoInfo.dueDate
+
+    try {
+        let date = dateParse(todoInfo.dueDate, 'dd/mm/yyyy', new Date())
+        date = dateFormat(date, 'yyyy-mm-dd')
+        dueDateInput.value = date
+    } catch (error) {
+        dueDateInput.value = todoInfo.dueDate
+    }
+    
+
     dueDateInput.classList.add('dueDateForm')
+    let dateInputLabel = document.createElement('label')
+    dueDateInput.for = 'newDate'
+    dateInputLabel.appendChild(document.createTextNode('Due Date'))
     let priorityInput = document.createElement('input')
     priorityInput.type = 'text'
     priorityInput.name = 'newPriority'
@@ -358,12 +475,13 @@ function editItem(event){
     sbtButton.type = 'submit'
     sbtButton.classList.add('itemSubmitButton')
     form.addEventListener('submit', submitEditItem)
-    Array(titleInput, descInput, dueDateInput, priorityInput, sbtButton).forEach((formItem) => form.appendChild(formItem))
+    Array(titleInput, descInput, dateInputLabel, dueDateInput, priorityInput, sbtButton).forEach((formItem) => form.appendChild(formItem))
     todoInfoDom.replaceChild(form, todoInfoDom.firstChild)
 }
 
 pubsub.subscribe('editItem', clearTodoList)
 pubsub.subscribe('editItem', renderTodoList)
+pubsub.subscribe('editItem', updateLocalStorage)
 pubsub.subscribe('editItem', ()=>{
     let allItems = document.querySelectorAll('.mainDiv > ul > li')
     allItems.forEach((li) =>{
@@ -376,6 +494,16 @@ pubsub.subscribe('editItem', ()=>{
 function submitEditItem(event){
     event.preventDefault()
     let {newTitle, newDesc, newDate, newPriority} = Object.fromEntries(new FormData(event.target).entries())
+    if(newTitle != document.currentTodoItemTitle && !isValidItemTitle(newTitle)){
+        alert('Item Titles Must Be Unique!!')
+        return
+    }
+    if(!isValidItemInput(Array(newTitle, newDesc, newDate, newPriority))){
+        alert('items cannot have " { } ," characters')
+        return
+    }
+    newDate = dateParse(newDate, 'yyyy-mm-dd', new Date())
+    newDate = dateFormat(newDate, 'dd/mm/yyyy' )
     updateTodoList(document.currentTodoListTitle, document.currentTodoItemTitle, 'priority', newPriority)
     updateTodoList(document.currentTodoListTitle, document.currentTodoItemTitle, 'dueDate', newDate)
     updateTodoList(document.currentTodoListTitle, document.currentTodoItemTitle, 'desc', newDesc)
@@ -385,8 +513,14 @@ function submitEditItem(event){
 
 pubsub.subscribe('removeItem', clearTodoList)
 pubsub.subscribe('removeItem', renderTodoList)
+pubsub.subscribe('removeItem', updateLocalStorage)
 function removeItem(event){
-    let todoInfo = JSON.parse(event.target.parentNode.parentNode.firstChild.textContent)
+    let todoInfoDom = event.target.parentNode.parentNode
+    if (!todoInfoDom.classList.contains('todoItem')){
+        todoInfoDom = todoInfoDom.parentNode
+    }
+    let todoInfo = JSON.parse(getTodoItemObject(todoInfoDom))
+    
     delTodoItem(document.currentTodoListTitle, todoInfo)
     pubsub.publish('removeItem', 'changingList')
 }
@@ -396,5 +530,13 @@ function removeItem(event){
 let sideDiv = document.querySelector('.sideDiv')
 let mainDiv = document.querySelector('.mainDiv')
 
+try {
+    if(localStorage.getItem('allTodos')){
+        allTodos = JSON.parse(localStorage.getItem('allTodos'))
+    }
+} catch (error) {
+    console.log(error);
+    updateLocalStorage()
+}
 
 renderTodoTitles(allTodos)

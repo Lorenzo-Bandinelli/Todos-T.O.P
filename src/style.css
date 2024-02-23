@@ -1,0 +1,170 @@
+@font-face {
+    font-family: 'bundaysans';
+    src: url('./bundaysans-bold.otf'), format('otf');
+    font-weight: normal;
+    font-style: normal;
+}
+
+html, body{
+    height: 99%;
+    background-color: #131114;
+    color: white;
+}
+
+body{
+    background-color: #1d1f20;
+    border-radius: 0.5%;
+    font-family: 'bundaysans';
+}
+
+.todoApp{
+    display: flex;
+    flex-direction: row;
+    height: 100%;
+    align-items: center;
+    flex-wrap: nowrap;
+    width: 100%;
+    display: flex;
+}
+
+.sideDiv{
+    background-color: #282A36;
+    width: 20vw;
+    height: 100%;
+    border-radius: 0.5%;
+    position: relative;
+    overflow: auto;
+    flex-grow: 0;
+
+}
+
+.sideDiv > *{
+    margin: 15px 12px;
+    color: #F14F66;
+}
+
+.buttonDiv{
+    position: absolute;
+    right: 5px;
+}
+
+.sideDiv > div > .todoGroup, .sideDiv > div > .buttonDiv{
+        display: inline;
+}
+
+input.nameInputForm, input.nameInputButton{
+    background-color: #3f3f00;
+    border-color: black;
+}
+
+.todoList{
+    margin-left: 5vw;
+}
+
+.mainDiv{
+    align-self: center;
+    width: 75%;
+    flex-grow: 0;
+    overflow: auto;
+    height: 100%;
+}
+
+.todoItem{
+    padding: 25px 0px;
+}
+
+.todoItem > *{
+    display: inline;
+}
+
+.todoItem > .todoItemInfo{
+    font-size: 1.05rem;
+    font-size: 1.05rem;
+}
+
+.todoItem > .itemButtonDiv{
+    margin-left: 50px;
+}
+
+.todoItem > .itemButtonDiv > button, .buttonDiv > button, .addButton{
+    font-size: 12px;
+    color: #F1FA76;
+    background-color: #282A36;
+    font-size: 0.78rem;
+}
+
+
+.sideDiv > .addTodoTitleButton{
+    text-align: center;
+    margin:50px 50px 0px 0px;
+}
+
+.todoItem > .itemButtonDiv > button:hover, .buttonDiv > button:hover, .addButton:hover{
+    color: #b44165;
+}
+
+.sideDiv > .addTodoTitleButton > button, .mainDiv > button{
+    font-size: 0.88rem;
+    border: none;
+    padding: 0.75rem 1rem;
+    background-color: #35384b;
+    color: #ffffff;
+    font-size: 0.75rem;
+    font-weight: 700;
+    cursor: pointer;
+    border-radius: 0.3rem;
+    box-shadow: 0 4px 6px -1px #484c66a6, 0 2px 4px -1px #484c6679;
+}
+
+.sideDiv > .addTodoTitleButton > button:hover, .mainDiv > button:hover {
+    box-shadow: 0 10px 15px -3px #484c6671, 0 4px 6px -2px #484c6660;
+    color: #b44165;
+  }
+  
+.sideDiv > .addTodoTitleButton > button:focus,
+.sideDiv > .addTodoTitleButton > button:active,
+.mainDiv > button:focus,
+.mainDiv > button:active {
+    opacity: 0.85;
+    box-shadow: none;
+  }
+
+/* button svg {
+    width: 1.25rem;
+    height: 1.25rem;
+  } */
+
+.mainDiv > button {
+    margin-left: calc(5vw + 35px);
+    font-size: 0.68rem;
+}
+  
+.removeTitleButton > img, .editTitleButton > img, .editItemButton > img, .removeItemButton> img{
+    filter: invert(98%) sepia(99%) saturate(2%) hue-rotate(32deg) brightness(114%) contrast(100%);
+    border: none;
+    height:1rem;
+}
+
+.removeTitleButton:hover, .editTitleButton:hover, .editItemButton:hover, .removeItemButton:hover{
+    img{
+        filter: invert(34%) sepia(28%) saturate(1911%) hue-rotate(297deg) brightness(92%) contrast(86%);
+    }
+}
+
+.todoInfoValue{
+    color: #4c9c1e;
+}
+
+.todoInfoKey{
+    color: #b44165;
+    text-transform: capitalize;
+}
+
+.todoInfoOpenCloseBrackets{
+    color: #F1FA76;
+}
+
+.addButton{
+    color: #F1FA76;
+    background-color: #282A36;
+}
