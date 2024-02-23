@@ -13,7 +13,63 @@ import {parse as dateParse, format as dateFormat} from 'date-fns'
 import './style.css'
 import deleteIcon from './delete-1-svgrepo-com.svg'
 import editIcon from './edit-svgrepo-com.svg'
-//render obj dinamically, get pubsub better working, datetime 
+
+function addObjListToDiv(objList, divToAdd){
+    let li = document.createElement('li')
+    li.classList.add('todoItem')
+    let textDiv = document.createElement('div')
+    textDiv.classList.add('todoItemInfo')
+    for(let i = 0; i <= objList.length + 1; i++){
+        if (i === 0) {
+            // first add {
+    
+            let spanOpenBrackets = document.createElement('span')
+            spanOpenBrackets.appendChild(document.createTextNode('{ '))
+            spanOpenBrackets.classList.add('todoInfoOpenCloseBrackets')
+            textDiv.appendChild(spanOpenBrackets)
+    
+        } else if (i === objList.length + 1){
+            // lastly add }
+    
+            let spanOpenBrackets = document.createElement('span')
+            spanOpenBrackets.appendChild(document.createTextNode(' }'))
+            spanOpenBrackets.classList.add('todoInfoOpenCloseBrackets')
+            textDiv.appendChild(spanOpenBrackets)
+    
+        } else{
+    
+            for (const [objIndex, [key, value]] of Object.entries(Object.entries(objList[i-1]))){
+                
+                
+                console.log(objIndex, Object.entries(objList[i-1]).length)
+                if (i === objList.length && Number(objIndex) + 1 === Object.entries(objList[i-1]).length){
+                    // dont add ',' in the last one 
+                    
+                    let spanTitleKey = document.createElement('span')
+                    spanTitleKey.appendChild(document.createTextNode(key + ': '))
+                    spanTitleKey.classList.add('todoInfoKey')
+                    let spanTitleValue = document.createElement('span')
+                    spanTitleValue.appendChild(document.createTextNode(value))
+                    spanTitleValue.classList.add('todoInfoValue')
+                    textDiv.appendChild(spanTitleKey)
+                    textDiv.appendChild(spanTitleValue)
+                } else{
+    
+                    let spanTitleKey = document.createElement('span')
+                    spanTitleKey.appendChild(document.createTextNode(key + ': '))
+                    spanTitleKey.classList.add('todoInfoKey')
+                    let spanTitleValue = document.createElement('span')
+                    spanTitleValue.appendChild(document.createTextNode(value + ', '))
+                    spanTitleValue.classList.add('todoInfoValue')
+                    textDiv.appendChild(spanTitleKey)
+                    textDiv.appendChild(spanTitleValue)
+                }
+            }
+        }
+    }
+    li.appendChild(textDiv)
+    divToAdd.appendChild(li)
+}
 
 function renderTodoList(event){
     if (event === 'changingList' || event.target.classList.contains('todoGroup')){
