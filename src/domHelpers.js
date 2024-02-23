@@ -88,56 +88,7 @@ function renderTodoList(event){
             }
             return
         }
-        for (let todoItemofList of todoList){
-            let {title, desc, dueDate, priority} = todoItemofList
-            let li = document.createElement('li')
-            let textDiv = document.createElement('div')
-            textDiv.classList.add('todoItemInfo')
-            //add a way to loop through the object programatically
-
-            let spanOpenBrackets = document.createElement('span')
-            spanOpenBrackets.appendChild(document.createTextNode('{ '))
-            spanOpenBrackets.classList.add('todoInfoOpenCloseBrackets')
-
-            let spanTitleKey = document.createElement('span')
-            spanTitleKey.appendChild(document.createTextNode('title: '))
-            spanTitleKey.classList.add('todoInfoKey')
-            let spanTitleValue = document.createElement('span')
-            spanTitleValue.appendChild(document.createTextNode(title + ', '))
-            spanTitleValue.classList.add('todoInfoValue')
-
-            let spanDescKey = document.createElement('span')
-            spanDescKey.appendChild(document.createTextNode('description: '))
-            spanDescKey.classList.add('todoInfoKey')
-            let spanDescValue = document.createElement('span')
-            spanDescValue.appendChild(document.createTextNode(desc + ', '))
-            spanDescValue.classList.add('todoInfoValue')
-
-            let spanDateKey = document.createElement('span')
-            spanDateKey.appendChild(document.createTextNode('due date: '))
-            spanDateKey.classList.add('todoInfoKey')
-            let spanDateValue = document.createElement('span')
-            spanDateValue.appendChild(document.createTextNode(dueDate + ', '))
-            spanDateValue.classList.add('todoInfoValue')
-
-            let spanPriorityKey = document.createElement('span')
-            spanPriorityKey.appendChild(document.createTextNode('priority: '))
-            spanPriorityKey.classList.add('todoInfoKey')
-            let spanPriorityValue = document.createElement('span')
-            spanPriorityValue.appendChild(document.createTextNode(priority + ' '))
-            spanPriorityValue.classList.add('todoInfoValue')
-
-            let spanCloseBrackets = document.createElement('span')
-            spanCloseBrackets.appendChild(document.createTextNode(' }'))
-            spanCloseBrackets.classList.add('todoInfoOpenCloseBrackets')
-
-            li.classList.add('todoItem')
-            Array(spanOpenBrackets, spanTitleKey, spanTitleValue, spanDescKey, spanDescValue, spanDateKey, spanDateValue, spanPriorityKey, spanPriorityValue, spanCloseBrackets)
-                .forEach((element) => textDiv.appendChild(element))
-            
-            li.appendChild(textDiv)
-            todoListDom.appendChild(li)
-        }
+        addObjListToDiv(todoList, todoListDom)
     }
     mainDiv.addEventListener('mouseover', renderAddTodoItemButton)
     mainDiv.addEventListener('mouseleave', removeAddTodoItemButton)
