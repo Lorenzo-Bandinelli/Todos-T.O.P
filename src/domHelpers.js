@@ -15,60 +15,88 @@ import deleteIcon from './delete-1-svgrepo-com.svg'
 import editIcon from './edit-svgrepo-com.svg'
 
 function addObjListToDiv(objList, divToAdd){
-    let li = document.createElement('li')
-    li.classList.add('todoItem')
-    let textDiv = document.createElement('div')
-    textDiv.classList.add('todoItemInfo')
-    for(let i = 0; i <= objList.length + 1; i++){
-        if (i === 0) {
-            // first add {
-    
-            let spanOpenBrackets = document.createElement('span')
-            spanOpenBrackets.appendChild(document.createTextNode('{ '))
-            spanOpenBrackets.classList.add('todoInfoOpenCloseBrackets')
-            textDiv.appendChild(spanOpenBrackets)
-    
-        } else if (i === objList.length + 1){
-            // lastly add }
-    
-            let spanOpenBrackets = document.createElement('span')
-            spanOpenBrackets.appendChild(document.createTextNode(' }'))
-            spanOpenBrackets.classList.add('todoInfoOpenCloseBrackets')
-            textDiv.appendChild(spanOpenBrackets)
-    
-        } else{
-    
-            for (const [objIndex, [key, value]] of Object.entries(Object.entries(objList[i-1]))){
+    for(let i = 0; i < objList.length; i++){
+        // if (i === 0) {
+        //     // when entering the loop, do somethiing
+        //     acumulator += '['
+        // } else if (i === objList.length + 1){
+        //     // when leaving the loop, do something
+        //     acumulator += ']'
+        // } else{
+        let li = document.createElement('li')
+        li.classList.add('todoItem')
+        let textDiv = document.createElement('div')
+        textDiv.classList.add('todoItemInfo')
+        
+        for (const [objIndex, [key, value]] of Object.entries(Object.entries(objList[i]))){
+            let entered = false
+            let newKey = key
+            console.log(key);
+            switch(key){
+                case 'dueDate':
+                    newKey = 'due date'
+                    break;
+                case 'desc':
+                    newKey = 'description'
+                    break;
+                default:
+                    newKey = key
+            }
+            console.log(key, newKey);
+            if (Number(objIndex) === 0){
+                //first key value pair
+
+                let spanOpenBrackets = document.createElement('span')
+                spanOpenBrackets.appendChild(document.createTextNode('{ '))
+                spanOpenBrackets.classList.add('todoInfoOpenCloseBrackets')
+                textDiv.appendChild(spanOpenBrackets)
+
+                let spanTitleKey = document.createElement('span')
+                spanTitleKey.appendChild(document.createTextNode(newKey + ': '))
+                spanTitleKey.classList.add('todoInfoKey')
+                let spanTitleValue = document.createElement('span')
+                spanTitleValue.appendChild(document.createTextNode(value + ', '))
+                spanTitleValue.classList.add('todoInfoValue')
+                textDiv.appendChild(spanTitleKey)
+                textDiv.appendChild(spanTitleValue)
+
+                entered = true
+            }
+            if (Number(objIndex) + 1 === Object.entries(objList[i]).length){
+                //last key value pair
+
+                let spanTitleKey = document.createElement('span')
+                spanTitleKey.appendChild(document.createTextNode(newKey + ': '))
+                spanTitleKey.classList.add('todoInfoKey')
+                let spanTitleValue = document.createElement('span')
+                spanTitleValue.appendChild(document.createTextNode(value))
+                spanTitleValue.classList.add('todoInfoValue')
+                textDiv.appendChild(spanTitleKey)
+                textDiv.appendChild(spanTitleValue)
                 
-                
-                console.log(objIndex, Object.entries(objList[i-1]).length)
-                if (i === objList.length && Number(objIndex) + 1 === Object.entries(objList[i-1]).length){
-                    // dont add ',' in the last one 
-                    
-                    let spanTitleKey = document.createElement('span')
-                    spanTitleKey.appendChild(document.createTextNode(key + ': '))
-                    spanTitleKey.classList.add('todoInfoKey')
-                    let spanTitleValue = document.createElement('span')
-                    spanTitleValue.appendChild(document.createTextNode(value))
-                    spanTitleValue.classList.add('todoInfoValue')
-                    textDiv.appendChild(spanTitleKey)
-                    textDiv.appendChild(spanTitleValue)
-                } else{
-    
-                    let spanTitleKey = document.createElement('span')
-                    spanTitleKey.appendChild(document.createTextNode(key + ': '))
-                    spanTitleKey.classList.add('todoInfoKey')
-                    let spanTitleValue = document.createElement('span')
-                    spanTitleValue.appendChild(document.createTextNode(value + ', '))
-                    spanTitleValue.classList.add('todoInfoValue')
-                    textDiv.appendChild(spanTitleKey)
-                    textDiv.appendChild(spanTitleValue)
-                }
+                let spanOpenBrackets = document.createElement('span')
+                spanOpenBrackets.appendChild(document.createTextNode(' }'))
+                spanOpenBrackets.classList.add('todoInfoOpenCloseBrackets')
+                textDiv.appendChild(spanOpenBrackets)
+
+                li.appendChild(textDiv)
+                divToAdd.appendChild(li)
+                entered = true
+            } 
+            if(!entered){
+                //any other key value pair
+                let spanTitleKey = document.createElement('span')
+                spanTitleKey.appendChild(document.createTextNode(newKey + ': '))
+                spanTitleKey.classList.add('todoInfoKey')
+                let spanTitleValue = document.createElement('span')
+                spanTitleValue.appendChild(document.createTextNode(value + ', '))
+                spanTitleValue.classList.add('todoInfoValue')
+                textDiv.appendChild(spanTitleKey)
+                textDiv.appendChild(spanTitleValue)
             }
         }
     }
-    li.appendChild(textDiv)
-    divToAdd.appendChild(li)
+    // }
 }
 
 function renderTodoList(event){

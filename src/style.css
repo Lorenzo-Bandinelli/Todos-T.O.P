@@ -53,8 +53,9 @@ body{
 }
 
 input.nameInputForm, input.nameInputButton{
-    background-color: #3f3f00;
+    background-color: #282A36;
     border-color: black;
+    color: white;
 }
 
 .todoList{
@@ -68,6 +69,10 @@ input.nameInputForm, input.nameInputButton{
     overflow: auto;
     height: 100%;
 }
+
+.mainDiv > form {
+    margin-left: calc(5vw + 30px);
+} 
 
 .todoItem{
     padding: 25px 0px;
